@@ -1,4 +1,4 @@
-CONFIG=configs/hssm/upernet_vssm_4xb4-160k_ade20k-512x512_tiny_mlp_ratio.py
+CONFIG=configs/hssm/upernet_vssm_4xb4-160k_ade20k-512x512_tiny_local_merge_composex.py
 GPUS=8
 NNODES=${NNODES:-1}
 NODE_RANK=${NODE_RANK:-0}
@@ -15,5 +15,5 @@ python -m torch.distributed.launch \
     $(dirname "$0")/train.py \
     $CONFIG \
     --launcher pytorch ${@:3} \
-    --work-dir output/hcurve-hilbert-zigzag-absposem_pos-mlp_ratio \
+    --work-dir output/hcurve-hilbert-zigzag-absposem_local_merge_composex \
     --load_from official_pretrained/upernet_vssm_4xb4-160k_ade20k-512x512_tiny_iter_160000.pth

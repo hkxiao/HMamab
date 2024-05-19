@@ -62,9 +62,9 @@ class Hcurve:
         queue = [1] * (h*w)
         for i in range(0, h):
             for j in range(0, w):
-                if dir == 'a':
+                if dir == 'b':
                     y, x = i, j
-                elif dir == 'b':
+                elif dir == 'a':
                     x, y = i, j
                 else:
                     raise RuntimeError(f'Hcurve {dir} not found.')
