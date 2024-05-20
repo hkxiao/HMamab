@@ -10,7 +10,7 @@ optim_wrapper = dict(
     _delete_=True,
     type='OptimWrapper',
     optimizer=dict(
-        type='AdamW', lr=3e-6, betas=(0.9, 0.999), weight_decay=0.01),
+        type='AdamW', lr=9e-7, betas=(0.9, 0.999), weight_decay=0.01),
     paramwise_cfg=dict(
         custom_keys={
             'absolute_pos_embed': dict(decay_mult=0.),
@@ -22,7 +22,7 @@ param_scheduler = [
     dict(
         type='PolyLR',
         eta_min=0.0,
-        power=1.0,
+        power=0.85,
         begin=0,
         end=32000,
         by_epoch=False,
@@ -42,9 +42,11 @@ default_hooks = dict(
     sampler_seed=dict(type='DistSamplerSeedHook'),
     visualization=dict(type='SegVisualizationHook', draw=True, interval=1600))
 
+model=dict(
+    decode_head=dict(
+        sampler=dict(type='OHEMPixelSampler', thresh=0.7, min_kept=100000)) )
 
 model = dict(
-
     backbone=dict(
         type='MM_VSSM',
         out_indices=(0, 1, 2, 3),
@@ -247,7 +249,7 @@ model = dict(
             )),
     auxiliary_head=dict(
         loss_decode=dict(
-            type='CrossEntropyLoss', use_sigmoid=False, loss_weight=0.4,
+            type='CrossEntropyLoss', use_sigmoid=False, loss_weight=0.0,
             class_weight=
             [
                 1,

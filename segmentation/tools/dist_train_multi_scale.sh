@@ -15,5 +15,5 @@ python -m torch.distributed.launch \
     $(dirname "$0")/train.py \
     $CONFIG \
     --launcher pytorch ${@:3} \
-    --work-dir output/hcurve-hilbert-zigzag-absposem_bad_samples_tuning \
+    --work-dir output/hcurve-hilbert-zigzag-absposem_multi_scale_big_posembedding \
     --load_from official_pretrained/upernet_vssm_4xb4-160k_ade20k-512x512_tiny_iter_160000.pth

@@ -16,4 +16,4 @@ python -m torch.distributed.launch \
     $CONFIG \
     --launcher pytorch ${@:3} \
     --work-dir output/hcurve-hilbert-zigzag-absposem_bad_samples_tuning \
-    --load_from output/hcurve-hilbert-zigzag-absposem_bad_samples_tuning/iter_3200.pth
+    --load_from output/hcurve-hilbert-zigzag-absposem_bad_samples_tuning/iter_1600.pth
