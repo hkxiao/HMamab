@@ -15,3 +15,5 @@ MODEL:
     DOWNSAMPLE: "v3"
     PATCHEMBED: "v2"
     NORM_LAYER: "ln2d"
+    DIRECTION_AWARE: False
+    SC_ATTN: False

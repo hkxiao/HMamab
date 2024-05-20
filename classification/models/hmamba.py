@@ -410,6 +410,7 @@ class SS2Dv2:
         # ======================
         forward_type="v2",
         channel_first=False,
+        direction_aware=False, 
         # ======================
         **kwargs,    
     ):
@@ -517,8 +518,9 @@ class SS2Dv2:
         
         
         # directions weight
-        self.direction_Bs = nn.Parameter(torch.zeros(5, d_inner))
-        trunc_normal_(self.direction_Bs, std=0.02)
+        if direction_aware:
+            self.direction_Bs = nn.Parameter(torch.zeros(5, d_inner))
+            trunc_normal_(self.direction_Bs, std=0.02)
         
         # out proj =======================================
         self.out_act = nn.GELU() if self.oact else nn.Identity()
@@ -665,6 +667,7 @@ class SS2Dv2:
             
             # xs = CrossScan.apply(x)
 
+            # print(xs)
             
             if no_einsum:
                 x_dbl = F.conv1d(xs.view(B, -1, L), x_proj_weight.view(-1, D, 1), bias=(x_proj_bias.view(-1) if x_proj_bias is not None else None), groups=K)
@@ -1047,8 +1050,6 @@ class SS2D(nn.Module, mamba_init, SS2Dv0, SS2Dv2, SS2Dv3):
         self.dep = dep
         self.multiscan = MultiScanVSSM(dim=int(d_model*ssm_ratio),choices=direction, sc_attn=sc_attn)
         
-        if direction_aware:
-            pass
         
         if forward_type in ["v0", "v0seq"]:
             self.__initv0__(seq=("seq" in forward_type), **kwargs)
@@ -1196,7 +1197,7 @@ class VSSM(nn.Module):
 
         super().__init__()
         if directions == None:
-            directions = ['h','h','h','h'] * sum(depths)
+            directions = [['h','v','h_flip','v_flip'] for depth in range(sum(depths))]
         
         self.channel_first = (norm_layer.lower() in ["bn", "ln2d"])
         self.num_classes = num_classes
@@ -1424,6 +1425,8 @@ class VSSM(nn.Module):
         ))
 
     def forward(self, x: torch.Tensor):
+        # print(x.shape)
+        # raise NameError
         x = self.patch_embed(x)
         if self.pos_embed is not None:
             pos_embed = self.pos_embed.permute(0, 2, 3, 1) if not self.channel_first else self.pos_embed
@@ -1433,6 +1436,22 @@ class VSSM(nn.Module):
         x = self.classifier(x)
         return x
 
+    def forward_feature(self, x: torch.Tensor, out_indices=[0,1,2,3]):
+        x = self.patch_embed(x)
+        if self.pos_embed is not None:
+            
+            if self.pos_embed.shape[-2:] != x.shape[-2:]:
+                x = x + F.interpolate(self.pos_embed,size=x.shape[-2:],mode='bilinear',align_corners=False)
+            else:
+                x = x + self.pos_embed
+                        
+        out_list = []
+        for i, layer in enumerate(self.layers):
+            x = layer(x)
+            if i in out_indices: 
+                out_list.append(x)
+        return out_list
+    
     def flops(self, shape=(3, 256, 256)):
         # shape = self.__input_shape__[1:]
         supported_ops={
@@ -1546,6 +1565,9 @@ class Backbone_VSSM(VSSM):
         x = self.patch_embed(x)
         
         if self.pos_embed is not None:
+            # print(self.pos_embed.shape, x.shape)
+            # raise NameError
+            
             #print('pos embedding')
             if self.pos_embed.shape[-2:] != x.shape[1:-1]:
                 x = x + F.interpolate(self.pos_embed,size=x.shape[1:-1],mode='bilinear',align_corners=False).permute(0,2,3,1)

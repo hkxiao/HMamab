@@ -34,7 +34,7 @@ MODEL:
       ['hcurve_a', 'hcurve_b', 'hilbert_c_shift_flip', 'hilbert_d'],
     ]
     DIRECTION_AWARE: True
-    SC_ATTN: False
+    SC_ATTN: True
 
 DATA:
   IMG_SIZE: 128

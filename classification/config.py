@@ -98,7 +98,7 @@ _C.MODEL.VSSM.DIRECTIONS = None
 _C.MODEL.VSSM.DIRECTION_AWARE = False
 _C.MODEL.VSSM.SC_ATTN = False
 _C.MODEL.VSSM.K_GROUP = None
-
+_C.MODEL.VSSM.POSEMBED = None
 
 # -----------------------------------------------------------------------------
 # Training settings
@@ -147,6 +147,7 @@ _C.TRAIN.OPTIMIZER.MOMENTUM = 0.9
 
 # [SimMIM] Layer decay for fine-tuning
 _C.TRAIN.LAYER_DECAY = 1.0
+_C.POSEMBED = False
 
 # MoE
 _C.TRAIN.MOE = CN()

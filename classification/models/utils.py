@@ -11,6 +11,7 @@ from Curve.hilbert_any_resolution.utils import Hilbert
 from Curve.h_curve.utils import Hcurve
 curve_queue_map = {}
 curve_sort_map = {}
+flag = False
 
 class MultiScan(nn.Module):
 
@@ -53,6 +54,7 @@ class MultiScan(nn.Module):
         Input @x: shape [B, L, D]
         """
         xs = []
+        # print(self.choices)
         for direction in self.choices:
             xs.append(self.scan(x, direction))
         return xs
@@ -212,7 +214,8 @@ class MultiScanVSSM(MultiScan):
     def __init__(self, dim, choices=None, sc_attn=True):
         super().__init__(dim, choices=choices, token_size=None)
         self.sc_attn = sc_attn
-        self.attn = BiAttn(dim)
+        if self.sc_attn:
+            self.attn = BiAttn(dim)
 
     def merge(self, xs):
         # xs: [B, K, D, L]
@@ -225,7 +228,13 @@ class MultiScanVSSM(MultiScan):
         xs = super().multi_reverse(xs) #[[B D L],...]
         
         if self.sc_attn:
-            xs = [self.attn(x.transpose(-2, -1)) for x in xs]
+            global flag
+            if flag == False and xs[0].requires_grad == True:
+                flag = True
+                self.attn._init_weights()
+            
+            xs = [x.transpose(-2, -1) + self.attn(x.transpose(-2, -1)) for x in xs]
+            
         x = super().forward(xs)
         return x
 
@@ -265,7 +274,18 @@ class BiAttn(nn.Module):
         self.channel_select = nn.Linear(reduce_channels, in_channels)
         # self.spatial_select = nn.Linear(reduce_channels * 2, 1)
         self.gate_fn = gate_fn()
+        
+        # fusion
+        self.fusion =  nn.Linear(in_channels, in_channels)
 
+    def _init_weights(self):
+        # 对所有子模块的参数进行初始化
+        for module in self.modules():
+            if hasattr(module, 'weight'):
+                nn.init.zeros_(module.weight)
+            if hasattr(module, 'bias') and module.bias is not None:
+                nn.init.zeros_(module.bias)
+                    
     def forward(self, x):
         ori_x = x
         x = self.norm(x)
@@ -280,6 +300,7 @@ class BiAttn(nn.Module):
 
         attn = c_attn #* s_attn  # [B, N, C]
         out = ori_x * attn
-        return out
+        
+        return self.fusion(out)
 
 

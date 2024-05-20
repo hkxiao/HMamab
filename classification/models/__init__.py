@@ -47,7 +47,8 @@ def build_vssm_model(config, is_pretrain=False):
             k_group=config.MODEL.VSSM.K_GROUP,
             directions=config.MODEL.VSSM.DIRECTIONS,
             sc_attn=config.MODEL.VSSM.SC_ATTN,
-            diretion_aware=config.MODEL.VSSM.DIRECTION_AWARE
+            diretion_aware=config.MODEL.VSSM.DIRECTION_AWARE,
+            posembed=config.MODEL.VSSM.POSEMBED,
         )
         return model
 

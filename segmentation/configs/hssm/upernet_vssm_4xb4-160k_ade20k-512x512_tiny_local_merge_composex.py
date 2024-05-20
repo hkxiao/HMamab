@@ -41,8 +41,8 @@ model = dict(
         ],
         direction_aware = True,
         sc_attn = True,
-        posembed=True
-                
+        posembed=True,
+        imgsize=512,
     ),)
 
 train_dataloader = dict(batch_size=4) # as gpus=4
