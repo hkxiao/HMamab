@@ -40,7 +40,7 @@ test.sh
 classification/models/vmamba copy.py
 kernels/selective_scan/ssmjax.py
 
-*.jgg
+*.jpg
 *.png
 *.pth
 
