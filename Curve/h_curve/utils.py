@@ -63,7 +63,7 @@ class Hcurve:
         for i in range(0, h):
             for j in range(0, w):
                 if dir == 'b':
-                    y, x = i, j
+                    y, x = j, i
                 elif dir == 'a':
                     x, y = i, j
                 else:

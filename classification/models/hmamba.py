@@ -1198,7 +1198,9 @@ class VSSM(nn.Module):
         super().__init__()
         if directions == None:
             directions = [['h','v','h_flip','v_flip'] for depth in range(sum(depths))]
-        
+
+        # print(directions)
+        # raise NameError
         self.channel_first = (norm_layer.lower() in ["bn", "ln2d"])
         self.num_classes = num_classes
         self.num_layers = len(depths)

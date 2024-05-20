@@ -21,23 +21,23 @@ model = dict(
         mlp_ratio=4.0,
         downsample_version="v3",
         patchembed_version="v2",
-        drop_path_rate=0.3,
+        drop_path_rate=0.2,
         k_group= 4,
         directions = [
-            ['hilbert_a', 'hilbert_a_flip', 'hcurve_a' , 'hcurve_a_flip'],
+            ['h', 'v', 'h_flip' , 'v_flip'],
             ['h', 'v', 'h_flip' , 'v_flip'],
 
-            ['hilbert_a', 'hilbert_a_flip', 'hcurve_a' , 'hcurve_a_flip'],
+            ['h', 'v', 'h_flip' , 'v_flip'],
             ['h', 'v', 'h_flip' , 'v_flip'],
 
-            ['hilbert_a', 'hilbert_a_flip', 'hcurve_a' , 'hcurve_a_flip'],
             ['h', 'v', 'h_flip' , 'v_flip'],
-            ['hilbert_a', 'hilbert_a_flip', 'hcurve_a' , 'hcurve_a_flip'],
             ['h', 'v', 'h_flip' , 'v_flip'],
-            ['hilbert_a', 'hilbert_a_flip', 'hcurve_a' , 'hcurve_a_flip'],
+            ['h', 'v', 'h_flip' , 'v_flip'],
+            ['h', 'v', 'h_flip' , 'v_flip'],
+            ['h', 'v', 'h_flip' , 'v_flip'],
             
             ['h', 'v', 'h_flip' , 'v_flip'],
-            ['hilbert_a', 'hilbert_a_flip', 'hcurve_a' , 'hcurve_a_flip'],
+            ['h', 'v', 'h_flip' , 'v_flip'],
         ],
         # directions = [
         #     ['h', 'v', 'h_flip' , 'v_flip'],
@@ -57,7 +57,7 @@ model = dict(
         # ],
         direction_aware = False,
         sc_attn = False,
-        posembed=True
+        posembed=False
                 
     ),)
 
