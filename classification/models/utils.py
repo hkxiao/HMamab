@@ -106,7 +106,9 @@ class MultiScan(nn.Module):
                 return local_scan_bchw(x, K, H, W, flip=flip)
                 # return LocalScanTriton.apply(x, K, flip, H, W).flatten(2)
             elif 'hilbert' in direction:
-                if x.requires_grad==True:
+                any_resolution= False
+                
+                if any_resolution:
                     k = direction+'_'+str(H)+'_'+str(W)
                     dir = direction.split('_')[1]
                     flip = 'flip' in direction
@@ -114,7 +116,7 @@ class MultiScan(nn.Module):
             
                     if k not in curve_queue_map.keys():
                         curve_queue_map[k], curve_sort_map[k] = Hilbert.make_queue_sort(H, W, dir=dir, flip=flip, shift=shift, save_dir='curve_vis')
-                        if slef.direction_indices_reverse:
+                        if self.direction_indices_reverse:
                             curve_queue_map[k], curve_sort_map[k] = curve_sort_map[k], curve_queue_map[k]
                             
                     return x.flatten(2)[:,:,curve_queue_map[k]]
@@ -126,17 +128,19 @@ class MultiScan(nn.Module):
                     dir = direction.split('_')[1]
                     flip = 'flip' in direction
                     shift = 'shift' in direction
-
+                    print(k)
                     if k not in curve_queue_map.keys():
                         curve_queue_map[k], curve_sort_map[k] = Hilbert.make_queue_sort(HH, WW, dir=dir, flip=flip, shift=shift, save_dir='curve_vis',clip=True,h_=H,w_=W)
-                        if slef.direction_indices_reverse:
+                        if self.direction_indices_reverse:
                             curve_queue_map[k], curve_sort_map[k] = curve_sort_map[k], curve_queue_map[k]
                         
                     return x.flatten(2)[:,:,curve_queue_map[k]]
                     
                     
-            elif 'hcurve' in direction:    
-                if x.requires_grad==True:
+            elif 'hcurve' in direction:  
+                any_resolution = False
+                  
+                if any_resolution:
                     k = direction+'_'+str(H)+'_'+str(W)
                     dir = direction.split('_')[1]
                     flip = 'flip' in direction
@@ -144,7 +148,7 @@ class MultiScan(nn.Module):
             
                     if k not in curve_queue_map.keys():
                         curve_queue_map[k], curve_sort_map[k] = Hcurve.make_queue_sort(H, W, dir=dir, flip=flip, shift=shift, save_dir='curve_vis')
-                        if slef.direction_indices_reverse:
+                        if self.direction_indices_reverse:
                             curve_queue_map[k], curve_sort_map[k] = curve_sort_map[k], curve_queue_map[k]
                         
                     return x.flatten(2)[:,:,curve_queue_map[k]]
@@ -159,7 +163,7 @@ class MultiScan(nn.Module):
 
                     if k not in curve_queue_map.keys():
                         curve_queue_map[k], curve_sort_map[k] = Hcurve.make_queue_sort(HH, WW, dir=dir, flip=flip, shift=shift, save_dir='curve_vis',clip=True,h_=H,w_=W)
-                        if slef.direction_indices_reverse:
+                        if self.direction_indices_reverse:
                             curve_queue_map[k], curve_sort_map[k] = curve_sort_map[k], curve_queue_map[k]
                     
                     return x.flatten(2)[:,:,curve_queue_map[k]]
@@ -200,7 +204,8 @@ class MultiScan(nn.Module):
             return local_reverse(x, K, H, W, flip=flip)
             # return LocalReverseTriton.apply(x, K, flip, H, W)
         elif 'hilbert' in direction or 'hcurve' in direction:
-            if x.requires_grad==True:
+            any_resolution=False
+            if any_resolution==True:
                 k = direction+'_'+str(H)+'_'+str(W)
             else:
                 log_level = max(ceil(log2(H)), ceil(log2(W)))

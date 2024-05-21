@@ -99,7 +99,8 @@ _C.MODEL.VSSM.DIRECTION_AWARE = False
 _C.MODEL.VSSM.SC_ATTN = False
 _C.MODEL.VSSM.K_GROUP = None
 _C.MODEL.VSSM.POSEMBED = None
-_C.MODEL.VSSM.DIRECION_INDICES_REVERSE = False
+_C.MODEL.VSSM.DIRECTION_INDICES_REVERSE = False
+_C.MODEL.VSSM.K_GROUP = 4
 
 # -----------------------------------------------------------------------------
 # Training settings

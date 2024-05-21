@@ -49,7 +49,7 @@ def build_vssm_model(config, is_pretrain=False):
             sc_attn=config.MODEL.VSSM.SC_ATTN,
             diretion_aware=config.MODEL.VSSM.DIRECTION_AWARE,
             posembed=config.MODEL.VSSM.POSEMBED,
-            direction_indices_reverse=config.MODEL.VSSM.DIRECION_INDICES_REVERSE
+            direction_indices_reverse=config.MODEL.VSSM.DIRECTION_INDICES_REVERSE,
         )
         return model
 

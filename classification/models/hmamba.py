@@ -258,7 +258,6 @@ class SS2Dv0:
         bias = False
         conv_bias = True
         d_conv = 3
-        k_group = 4
         factory_kwargs = {"device": None, "dtype": None}
         super().__init__()
         d_inner = int(ssm_ratio * d_model)
@@ -411,9 +410,12 @@ class SS2Dv2:
         forward_type="v2",
         channel_first=False,
         direction_aware=False, 
+        k_group=4,
         # ======================
         **kwargs,    
     ):
+        # print(k_group)
+        # raise NameError
         factory_kwargs = {"device": None, "dtype": None}
         super().__init__()
         d_inner = int(ssm_ratio * d_model)
@@ -489,7 +491,7 @@ class SS2Dv2:
             v32dc=partial(self.forward_corev2, force_fp32=False, SelectiveScan=SelectiveScanOflex, cascade2d=True),
         )
         self.forward_core = FORWARD_TYPES.get(forward_type, None)
-        k_group = 4
+
 
         # in proj =======================================
         d_proj = d_inner if self.disable_z else (d_inner * 2)
@@ -667,7 +669,7 @@ class SS2Dv2:
             
             # xs = CrossScan.apply(x)
 
-            # print(xs)
+            print(xs.shape)
             
             if no_einsum:
                 x_dbl = F.conv1d(xs.view(B, -1, L), x_proj_weight.view(-1, D, 1), bias=(x_proj_bias.view(-1) if x_proj_bias is not None else None), groups=K)
@@ -772,7 +774,7 @@ class SS2Dv3:
         self.d_state = d_state
         self.dt_rank = dt_rank
         self.d_inner = d_inner
-        k_group = 4
+
         self.with_dconv = d_conv > 1
         Linear = Linear2d if channel_first else nn.Linear
         LayerNorm = LayerNorm2d if channel_first else nn.LayerNorm
@@ -1037,15 +1039,17 @@ class SS2D(nn.Module, mamba_init, SS2Dv0, SS2Dv2, SS2Dv3):
         sc_attn=None,
         direction_aware=None,
         direction_indices_reverse=False,
+        k_group=4,
         # ======================
         **kwargs,
     ):
+
         super().__init__()
         kwargs.update(
             d_model=d_model, d_state=d_state, ssm_ratio=ssm_ratio, dt_rank=dt_rank,
             act_layer=act_layer, d_conv=d_conv, conv_bias=conv_bias, dropout=dropout, bias=bias,
             dt_min=dt_min, dt_max=dt_max, dt_init=dt_init, dt_scale=dt_scale, dt_init_floor=dt_init_floor,
-            initialize=initialize, forward_type=forward_type, channel_first=channel_first,
+            initialize=initialize, forward_type=forward_type, channel_first=channel_first, k_group=k_group
         )
 
         self.dep = dep
@@ -1091,6 +1095,7 @@ class VSSBlock(nn.Module):
         sc_attn=None,
         direction_aware=None,
         direction_indices_reverse=False,
+        k_group=4,
         **kwargs,
     ):
         super().__init__()
@@ -1128,6 +1133,7 @@ class VSSBlock(nn.Module):
                 sc_attn=sc_attn,
                 direction_aware=direction_aware,
                 direction_indices_reverse=direction_indices_reverse,
+                k_group=k_group
             )
         
         self.drop_path = DropPath(drop_path)
@@ -1195,6 +1201,8 @@ class VSSM(nn.Module):
         directions=None,
         sc_attn=None,
         direction_aware=None,
+        direction_indices_reverse=False,
+        k_group=4,
         **kwargs,
     ):
 
@@ -1282,6 +1290,7 @@ class VSSM(nn.Module):
                 sc_attn=sc_attn,
                 direction_aware=direction_aware,
                 direction_indices_reverse=direction_indices_reverse,
+                k_group=k_group
             ))
 
         self.classifier = nn.Sequential(OrderedDict(
@@ -1394,7 +1403,7 @@ class VSSM(nn.Module):
         sc_attn=None,
         direction_aware=None,
         direction_indices_reverse=False,
-        direction_indices_reverse=False,
+        k_group=4,
         **kwargs,
     ):
           
@@ -1425,7 +1434,8 @@ class VSSM(nn.Module):
                 direction=directions[d],
                 sc_attn=sc_attn,
                 direction_aware=direction_aware,
-                direction_indices_reverse=direction_indices_reverse
+                direction_indices_reverse=direction_indices_reverse,
+                k_group=k_group
             ))
         
         return nn.Sequential(OrderedDict(

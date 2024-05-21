@@ -45,5 +45,7 @@ kernels/selective_scan/ssmjax.py
 *.pth
 
 **/output
+**/configs
 
 *.txt
+**/curve_vis
