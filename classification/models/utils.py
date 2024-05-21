@@ -114,7 +114,9 @@ class MultiScan(nn.Module):
             
                     if k not in curve_queue_map.keys():
                         curve_queue_map[k], curve_sort_map[k] = Hilbert.make_queue_sort(H, W, dir=dir, flip=flip, shift=shift, save_dir='curve_vis')
-                        
+                        if slef.direction_indices_reverse:
+                            curve_queue_map[k], curve_sort_map[k] = curve_sort_map[k], curve_queue_map[k]
+                            
                     return x.flatten(2)[:,:,curve_queue_map[k]]
                 else:
                     log_level = max(ceil(log2(H)), ceil(log2(W)))
@@ -127,6 +129,8 @@ class MultiScan(nn.Module):
 
                     if k not in curve_queue_map.keys():
                         curve_queue_map[k], curve_sort_map[k] = Hilbert.make_queue_sort(HH, WW, dir=dir, flip=flip, shift=shift, save_dir='curve_vis',clip=True,h_=H,w_=W)
+                        if slef.direction_indices_reverse:
+                            curve_queue_map[k], curve_sort_map[k] = curve_sort_map[k], curve_queue_map[k]
                         
                     return x.flatten(2)[:,:,curve_queue_map[k]]
                     
@@ -140,6 +144,8 @@ class MultiScan(nn.Module):
             
                     if k not in curve_queue_map.keys():
                         curve_queue_map[k], curve_sort_map[k] = Hcurve.make_queue_sort(H, W, dir=dir, flip=flip, shift=shift, save_dir='curve_vis')
+                        if slef.direction_indices_reverse:
+                            curve_queue_map[k], curve_sort_map[k] = curve_sort_map[k], curve_queue_map[k]
                         
                     return x.flatten(2)[:,:,curve_queue_map[k]]
                 else:
@@ -153,10 +159,11 @@ class MultiScan(nn.Module):
 
                     if k not in curve_queue_map.keys():
                         curve_queue_map[k], curve_sort_map[k] = Hcurve.make_queue_sort(HH, WW, dir=dir, flip=flip, shift=shift, save_dir='curve_vis',clip=True,h_=H,w_=W)
-                        
+                        if slef.direction_indices_reverse:
+                            curve_queue_map[k], curve_sort_map[k] = curve_sort_map[k], curve_queue_map[k]
+                    
                     return x.flatten(2)[:,:,curve_queue_map[k]]
                     
-            
             else:
                 raise RuntimeError(f'Direction {direction} not found.')
 
@@ -211,9 +218,10 @@ class MultiScanVSSM(MultiScan):
 
     ALL_CHOICES = MultiScan.ALL_CHOICES
 
-    def __init__(self, dim, choices=None, sc_attn=True):
+    def __init__(self, dim, choices=None, sc_attn=True, direction_indices_reverse=False):
         super().__init__(dim, choices=choices, token_size=None)
         self.sc_attn = sc_attn
+        self.direction_indices_reverse=direction_indices_reverse
         if self.sc_attn:
             self.attn = BiAttn(dim)
 

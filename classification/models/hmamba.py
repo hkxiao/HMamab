@@ -1036,6 +1036,7 @@ class SS2D(nn.Module, mamba_init, SS2Dv0, SS2Dv2, SS2Dv3):
         direction=None,
         sc_attn=None,
         direction_aware=None,
+        direction_indices_reverse=False,
         # ======================
         **kwargs,
     ):
@@ -1048,7 +1049,7 @@ class SS2D(nn.Module, mamba_init, SS2Dv0, SS2Dv2, SS2Dv3):
         )
 
         self.dep = dep
-        self.multiscan = MultiScanVSSM(dim=int(d_model*ssm_ratio),choices=direction, sc_attn=sc_attn)
+        self.multiscan = MultiScanVSSM(dim=int(d_model*ssm_ratio),choices=direction, sc_attn=sc_attn,direction_indices_reverse=direction_indices_reverse)
         
         
         if forward_type in ["v0", "v0seq"]:
@@ -1089,6 +1090,7 @@ class VSSBlock(nn.Module):
         direction=None,
         sc_attn=None,
         direction_aware=None,
+        direction_indices_reverse=False,
         **kwargs,
     ):
         super().__init__()
@@ -1125,6 +1127,7 @@ class VSSBlock(nn.Module):
                 direction = direction,
                 sc_attn=sc_attn,
                 direction_aware=direction_aware,
+                direction_indices_reverse=direction_indices_reverse,
             )
         
         self.drop_path = DropPath(drop_path)
@@ -1278,6 +1281,7 @@ class VSSM(nn.Module):
                 directions=directions[sum(depths[:i_layer]):sum(depths[:i_layer + 1])],
                 sc_attn=sc_attn,
                 direction_aware=direction_aware,
+                direction_indices_reverse=direction_indices_reverse,
             ))
 
         self.classifier = nn.Sequential(OrderedDict(
@@ -1389,6 +1393,8 @@ class VSSM(nn.Module):
         directions=None,
         sc_attn=None,
         direction_aware=None,
+        direction_indices_reverse=False,
+        direction_indices_reverse=False,
         **kwargs,
     ):
           
@@ -1419,6 +1425,7 @@ class VSSM(nn.Module):
                 direction=directions[d],
                 sc_attn=sc_attn,
                 direction_aware=direction_aware,
+                direction_indices_reverse=direction_indices_reverse
             ))
         
         return nn.Sequential(OrderedDict(
